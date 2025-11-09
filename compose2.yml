@@ -1,0 +1,124 @@
+services:
+  # ------------------ Zookeeper ------------------
+  zookeeper:
+    image: zookeeper:latest
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOO_4LW_COMMANDS_WHITELIST: ruok, stat
+    networks:
+      - core
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo ruok | nc localhost 2181 | grep imok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ------------------ Kafka ------------------
+  kafka:
+    image: confluentinc/cp-kafka:7.6.1
+    container_name: kafka
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    networks:
+      - core
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+
+  # ------------------ Spark Master ------------------
+  spark-master:
+    image: apache/spark:3.5.3
+    container_name: spark-master
+    environment:
+      SPARK_MODE: master
+      SPARK_NO_DAEMONIZE: "true"
+    ports:
+      - "7077:7077"
+      - "8080:8080"
+    networks:
+      - core
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.master.Master"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ------------------ Spark Worker ------------------
+  spark-worker:
+    image: apache/spark:3.5.3
+    container_name: spark-worker
+    depends_on:
+      spark-master:
+        condition: service_healthy
+    environment:
+      SPARK_MODE: worker
+      SPARK_MASTER_URL: spark://spark-master:7077
+      SPARK_WORKER_MEMORY: 4G
+      SPARK_WORKER_CORES: "2"
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.worker.Worker", "spark://spark-master:7077"]
+    networks:
+      - core
+
+  # ------------------ MongoDB ------------------
+  mongo:
+    image: mongo:6.0
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - core
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.runCommand({ ping: 1 })"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ------------------ Grafana ------------------
+  grafana:
+    image: grafana/grafana:10.4.3
+    container_name: grafana
+    depends_on:
+      mongo:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_INSTALL_PLUGINS: "meln5674-mongodb-datasource"
+      GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: "meln5674-mongodb-datasource"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - core
+
+# ------------------ Networks ------------------
+networks:
+  core:
+    driver: bridge
+
+# ------------------ Volumes ------------------
+volumes:
+  mongo-data:
+  grafana-data:
