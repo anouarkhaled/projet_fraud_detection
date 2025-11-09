@@ -1,0 +1,15 @@
+# ---- Data Streaming and Processing ----
+pyspark
+kafka-python
+
+# ---- Database ----
+pymongo
+influxdb-client
+influxdb
+# ---- Utilities ----
+python-dotenv
+requests
+Faker
+# ---- Optional (for testing and debugging) ----
+pandas
+numpy
