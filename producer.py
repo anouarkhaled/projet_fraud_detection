@@ -27,12 +27,14 @@ def make_transaction():
     """Generate a fake transaction."""
     return {
         "transaction_id": fake.uuid4(),
-        "client_id": str(random.randint(1000, 9999)),
+        "client_id": str(random.randint(1, 10)),
         "amount": round(random.uniform(1, 5000), 2),
         "currency": "USD",
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "location": fake.city(),
-        "device": random.choice(["mobile", "web", "pos"])
+        "device": random.choice(["mobile", "web", "pos"]),
+        "merchant_category": random.choice(["food", "electronics", "fashion", "travel"]),
+        "region": random.choice(["north", "south", "east", "west"]) 
     }
 
 if __name__ == "__main__":
