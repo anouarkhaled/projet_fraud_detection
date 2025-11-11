@@ -18,14 +18,27 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 9,
+  "id": 1,
   "links": [],
   "liveNow": true,
   "panels": [
     {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 8,
+      "panels": [],
+      "title": "Observations",
+      "type": "row"
+    },
+    {
       "datasource": {
         "type": "influxdb",
-        "uid": "af3oxn31gxs00e"
+        "uid": "ef3qf33lahx4wa"
       },
       "fieldConfig": {
         "defaults": {
@@ -79,38 +92,13 @@
             ]
           }
         },
-        "overrides": [
-          {
-            "__systemRef": "hideSeriesFrom",
-            "matcher": {
-              "id": "byNames",
-              "options": {
-                "mode": "exclude",
-                "names": [
-                  "avg_amount_by_category.mean { merchant_category: fashion }"
-                ],
-                "prefix": "All except:",
-                "readOnly": true
-              }
-            },
-            "properties": [
-              {
-                "id": "custom.hideFrom",
-                "value": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": true
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
         "h": 12,
-        "w": 17,
+        "w": 18,
         "x": 0,
-        "y": 0
+        "y": 1
       },
       "id": 1,
       "options": {
@@ -127,6 +115,10 @@
       },
       "targets": [
         {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "ef3qf33lahx4wa"
+          },
           "query": "SELECT mean(\"avg_amount\") FROM \"avg_amount_by_category\" WHERE $timeFilter GROUP BY time(1m), \"merchant_category\" fill(null)",
           "rawQuery": true,
           "refId": "A",
@@ -137,10 +129,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "af3oxn31gxs00e"
-      },
+      "datasource": {},
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -193,38 +182,13 @@
             ]
           }
         },
-        "overrides": [
-          {
-            "__systemRef": "hideSeriesFrom",
-            "matcher": {
-              "id": "byNames",
-              "options": {
-                "mode": "exclude",
-                "names": [
-                  "txn_count_by_region.sum { region: west }"
-                ],
-                "prefix": "All except:",
-                "readOnly": true
-              }
-            },
-            "properties": [
-              {
-                "id": "custom.hideFrom",
-                "value": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": true
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
         "h": 9,
         "w": 18,
         "x": 0,
-        "y": 12
+        "y": 13
       },
       "id": 2,
       "options": {
@@ -241,6 +205,10 @@
       },
       "targets": [
         {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "ef3qf33lahx4wa"
+          },
           "query": "SELECT sum(\"txn_count\") FROM \"txn_count_by_region\" WHERE $timeFilter GROUP BY time(1m), \"region\" fill(null)",
           "rawQuery": true,
           "refId": "B",
@@ -253,10 +221,152 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "af3oxn31gxs00e"
+        "uid": "ef3qf33lahx4wa"
       },
       "fieldConfig": {
         "defaults": {
+          "custom": {
+            "align": "left",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 22
+      },
+      "id": 9,
+      "options": {
+        "cellHeight": "sm",
+        "fontSize": "100%",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "10.4.3",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "ef3qf33lahx4wa"
+          },
+          "query": "SELECT \"transaction_id\", \"client_id\", \"amount\", \"location\", \"region\", \"merchant_category\", \"device\"\nFROM \"raw_transactions\"\nWHERE $timeFilter\nORDER BY time DESC\nLIMIT 20",
+          "rawQuery": true,
+          "refId": "C",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "Latest Transactions Sample",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ef3qf33lahx4wa"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "left",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 30
+      },
+      "id": 10,
+      "options": {
+        "cellHeight": "sm",
+        "fontSize": "100%",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "10.4.3",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "ef3qf33lahx4wa"
+          },
+          "query": "SELECT \"client_id\", \"region_count\", \"regions_seen_str\"\nFROM \"impossible_travel_alerts\"\nWHERE $timeFilter  ",
+          "rawQuery": true,
+          "refId": "C",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "Impossible Travel Fraud",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ef3qf33lahx4wa"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
           "custom": {
             "align": "auto",
             "cellOptions": {
@@ -285,9 +395,9 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 38
       },
-      "id": 3,
+      "id": 11,
       "options": {
         "cellHeight": "sm",
         "fontSize": "100%",
@@ -299,19 +409,201 @@
           ],
           "show": false
         },
-        "showHeader": true
+        "showHeader": true,
+        "sortBy": []
       },
       "pluginVersion": "10.4.3",
       "targets": [
         {
-          "query": "SELECT last(\"avg_amount\") AS amount, last(\"merchant_category\") AS category, last(\"region\") AS region FROM \"avg_amount_by_category\" GROUP BY \"merchant_category\", \"region\"",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "ef3qf33lahx4wa"
+          },
+          "query": "SELECT \"client_id\", \"categories_seen_str\", \"category_count\"\nFROM \"spending_spree_alerts\"\nWHERE $timeFilter",
           "rawQuery": true,
           "refId": "C",
           "resultFormat": "table"
         }
       ],
-      "title": "Latest Transactions Sample",
+      "title": "Suspicious Spending Spree Fraud",
       "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ef3qf33lahx4wa"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 46
+      },
+      "id": 12,
+      "options": {
+        "cellHeight": "sm",
+        "fontSize": "100%",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "10.4.3",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "ef3qf33lahx4wa"
+          },
+          "query": "SELECT \"client_id\", \"min_amount\", \"max_amount\"\nFROM \"low_high_velocity_alerts\"\nWHERE $timeFilter",
+          "rawQuery": true,
+          "refId": "C",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "High velocity Fraud",
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 54
+      },
+      "id": 6,
+      "panels": [],
+      "title": "Client observations",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ef3qf33lahx4wa"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 55
+      },
+      "id": 5,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "ef3qf33lahx4wa"
+          },
+          "query": "SELECT CUMULATIVE_SUM(sum(\"amount\"))\nFROM \"raw_transactions\"\nWHERE \"client_id\" =~ /$client_id$/ AND $timeFilter\nGROUP BY time($__interval), \"client_id\"",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Sum of the amounts per client",
+      "type": "timeseries"
     }
   ],
   "refresh": "5s",
@@ -321,10 +613,30 @@
     "transactions"
   ],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "10",
+          "value": "10"
+        },
+        "definition": "SHOW TAG VALUES FROM \"raw_transactions\" WITH KEY = \"client_id\"",
+        "hide": 0,
+        "includeAll": true,
+        "multi": false,
+        "name": "client_id",
+        "options": [],
+        "query": "SHOW TAG VALUES FROM \"raw_transactions\" WITH KEY = \"client_id\"",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
