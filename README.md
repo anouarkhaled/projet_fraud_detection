@@ -45,8 +45,7 @@ Producer → Kafka → Spark Streaming → InfluxDB → Grafana
 docker exec -it kafka /usr/bin/kafka-console-consumer     --bootstrap-server localhost:9092     --topic transactions     --from-beginning
 ```
 ### delete the topic and create if you need that
-PS C:\Users\lanouar> docker exec -it kafka /usr/bin/kafka-topics  --bootstrap-server localhost:9092 --list
-__consumer_offsets
+PS C:\Users\lanouar> docker exec -it kafka /usr/bin/kafka-topics  --bootstrap-server localhost:9092 --list __consumer_offsets
 PS C:\Users\lanouar> docker exec -it kafka kafka-topics --bootstrap-server localhost:9092 --create --topic transactions --partitions 1 --replication-factor 1
 Created topic transactions.
 
